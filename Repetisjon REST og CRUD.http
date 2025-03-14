@@ -1,0 +1,6 @@
+@Repetisjon_REST_og_CRUD_HostAddress = http://localhost:5012
+
+GET {{Repetisjon_REST_og_CRUD_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
