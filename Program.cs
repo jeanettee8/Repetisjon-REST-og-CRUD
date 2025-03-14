@@ -17,7 +17,8 @@ public class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
-        builder.Services.AddDbContext<GameDatabaseContext>(); // i had forgotten this one and struggled for 30 mins without it working
+        builder.Services.AddDbContext<GameDatabaseContext>();
+        // This one is important to not forget, I had forgotten this one and struggled for 30 mins without it working
 
         var app = builder.Build();
 

@@ -40,7 +40,7 @@ namespace Repetisjon_REST_og_CRUD.Controllers
             existingGame.GlobalSales = dto.GlobalSales;
             existingGame.Rating = dto.Rating;
             context.SaveChanges();
-            return Created();
+            return NoContent();
         }
 
         [HttpDelete("{gameID}")]
@@ -49,7 +49,12 @@ namespace Repetisjon_REST_og_CRUD.Controllers
             if (existingGame == null) return NotFound();
             context.Games.Remove(existingGame);
             context.SaveChanges();
-            return NoContent();
+            return Ok();
         }
     }
 }
+
+//add get query
+//is created ok for post or should it have ok?
+//is nocontent ok for patch?
+//is ok ok for delete
