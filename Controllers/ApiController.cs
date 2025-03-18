@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Repetisjon_REST_og_CRUD.DatabaseContext;
 using Repetisjon_REST_og_CRUD.Models;
+
 
 namespace Repetisjon_REST_og_CRUD.Controllers
 {
@@ -11,8 +13,12 @@ namespace Repetisjon_REST_og_CRUD.Controllers
     [ApiController]
     public class GameController(GameDatabaseContext context) : ControllerBase
     {
+
         [HttpGet]
-        public IActionResult Get(){
+        public IActionResult Get([FromQuery]QueryDTO? dto) {
+            if (dto != null) {
+                return Ok(dto.QueryBuilder(context.Games.ToList().AsQueryable()));
+            }
             return Ok(context.Games);
         }
 
@@ -47,9 +53,16 @@ namespace Repetisjon_REST_og_CRUD.Controllers
         public IActionResult Delete(int gameID) {
             var existingGame = context.Games.FirstOrDefault(game=>game.GameID==gameID);
             if (existingGame == null) return NotFound();
+            //try {
             context.Games.Remove(existingGame);
             context.SaveChanges();
             return Ok();
+            /*}
+            catch 
+            {
+                Console.WriteLine("Something went wrong");
+                return BadRequest();
+            }*/
         }
     }
 }
