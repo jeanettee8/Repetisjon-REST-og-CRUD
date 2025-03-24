@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -24,50 +25,67 @@ namespace Repetisjon_REST_og_CRUD.Controllers
 
         [HttpGet("{gameID}")]
         public IActionResult Get(int gameID) {
-            return Ok(context.Games.FirstOrDefault(game=>game.GameID==gameID));
+            try
+            {
+                return Ok(context.Games.FirstOrDefault(game=>game.GameID==gameID));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, "Something went wrong.");
+            }
         }
+
 
         [HttpPost]
         public IActionResult Post([FromBody]GameModelDTO dto) {
-            context.Games.Add(dto.MapToGameModel());
-            context.SaveChanges();
-            return Created();
+            try
+            {
+                context.Games.Add(dto.MapToGameModel());
+                context.SaveChanges();
+                return Created();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500, "Something went wrong.");
+            }
         }
 
         [HttpPatch("{gameID}")]
-        public IActionResult Patch(int gameID, [FromBody]GameModelDTO dto) {
-            var existingGame = context.Games.FirstOrDefault(game=>game.GameID==gameID);
-            if (existingGame == null) return NotFound();
-            existingGame.Title = dto.Title;
-            existingGame.Genre = dto.Genre;
-            existingGame.Platform = dto.Platform;
-            existingGame.ReleaseYear = dto.ReleaseYear;
-            existingGame.Publisher = dto.Publisher;
-            existingGame.GlobalSales = dto.GlobalSales;
-            existingGame.Rating = dto.Rating;
-            context.SaveChanges();
-            return NoContent();
+            public IActionResult Patch(int gameID, [FromBody]GameModelDTO dto) {
+                try 
+                {
+                    var existingGame = context.Games.FirstOrDefault(game=>game.GameID==gameID);
+                    if (existingGame == null) return NotFound();
+                    existingGame.Title = dto.Title;
+                    existingGame.Genre = dto.Genre;
+                    existingGame.Platform = dto.Platform;
+                    existingGame.ReleaseYear = dto.ReleaseYear;
+                    existingGame.Publisher = dto.Publisher;
+                    existingGame.GlobalSales = dto.GlobalSales;
+                    existingGame.Rating = dto.Rating;
+                    context.SaveChanges();
+                    return NoContent();
+                }
+                catch (Exception e)
+                {
+                    return StatusCode(500, "Something went wrong.");
+                }
         }
 
         [HttpDelete("{gameID}")]
         public IActionResult Delete(int gameID) {
-            var existingGame = context.Games.FirstOrDefault(game=>game.GameID==gameID);
-            if (existingGame == null) return NotFound();
-            //try {
-            context.Games.Remove(existingGame);
-            context.SaveChanges();
-            return Ok();
-            /*}
-            catch 
+            try
             {
-                Console.WriteLine("Something went wrong");
-                return BadRequest();
-            }*/
+                var existingGame = context.Games.FirstOrDefault(game=>game.GameID==gameID);
+                if (existingGame == null) return NotFound();
+                context.Games.Remove(existingGame);
+                context.SaveChanges();
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode (500, "Something went wrong.");
+            }
         }
     }
 }
-
-//add get query
-//is created ok for post or should it have ok?
-//is nocontent ok for patch?
-//is ok ok for delete
