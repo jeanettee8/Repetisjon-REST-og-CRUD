@@ -20,8 +20,9 @@ namespace Repetisjon_REST_og_CRUD.Controllers
             if (dto != null) {
                 return Ok(dto.QueryBuilder(context.Games.ToList().AsQueryable()));
             }
+            {
             return Ok(context.Games);
-        }
+            }}
 
         [HttpGet("{gameID}")]
         public IActionResult Get(int gameID) {
