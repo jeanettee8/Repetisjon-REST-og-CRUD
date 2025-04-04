@@ -19,6 +19,8 @@ public class Program
         builder.Services.AddSwaggerGen();
         builder.Services.AddDbContext<GameDatabaseContext>();
         // This one is important to not forget, I had forgotten this one and struggled for 30 mins without it working
+        builder.Services.AddLogging(); 
+        // To use logging when handling exceptions
 
         var app = builder.Build();
 
@@ -43,8 +45,8 @@ public class Program
                     while (gameData.Count<8) {
                         gameData.Add(string.Empty);
                     }
-                    var newGame = new GameModel() {
-                        Title = gameData[1], Genre = gameData[2], Platform = gameData[3], Publisher = gameData[5], Rating = gameData[7]};
+                    var newGame = new GameModel() { //remember to parse correctly!!! int/double etc.
+                        Title = gameData[1], Genre = gameData[2], Platform = gameData[3], ReleaseYear = int.Parse(gameData[4]), Publisher = gameData[5], GlobalSales = double.Parse(gameData[6]), Rating = gameData[7]};
                         context.Games.Add(newGame);
                     }
                     context.SaveChanges();

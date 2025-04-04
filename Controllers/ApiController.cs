@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Repetisjon_REST_og_CRUD.DatabaseContext;
 using Repetisjon_REST_og_CRUD.Models;
 
@@ -12,7 +13,7 @@ namespace Repetisjon_REST_og_CRUD.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GameController(GameDatabaseContext context) : ControllerBase
+    public class GameController(GameDatabaseContext context, ILogger<GameController> logger) : ControllerBase
     {
 
         [HttpGet]
@@ -30,8 +31,9 @@ namespace Repetisjon_REST_og_CRUD.Controllers
             {
                 return Ok(context.Games.FirstOrDefault(game=>game.GameID==gameID));
             }
-            catch (Exception e)
+            catch (ArgumentNullException e)
             {
+                logger.LogError(e.Message);
                 return StatusCode(500, "Something went wrong.");
             }
         }
@@ -45,8 +47,9 @@ namespace Repetisjon_REST_og_CRUD.Controllers
                 context.SaveChanges();
                 return Created();
             }
-            catch (Exception e)
+            catch (DbUpdateException e)
             {
+                logger.LogError(e.Message);
                 return StatusCode(500, "Something went wrong.");
             }
         }
@@ -57,18 +60,19 @@ namespace Repetisjon_REST_og_CRUD.Controllers
                 {
                     var existingGame = context.Games.FirstOrDefault(game=>game.GameID==gameID);
                     if (existingGame == null) return NotFound();
-                    existingGame.Title = dto.Title;
-                    existingGame.Genre = dto.Genre;
-                    existingGame.Platform = dto.Platform;
-                    existingGame.ReleaseYear = dto.ReleaseYear;
-                    existingGame.Publisher = dto.Publisher;
-                    existingGame.GlobalSales = dto.GlobalSales;
-                    existingGame.Rating = dto.Rating;
+                    dto.MapToGameModel(existingGame);                   
                     context.SaveChanges();
                     return NoContent();
                 }
-                catch (Exception e)
+                catch (ArgumentNullException e)
                 {
+                    logger.LogError(e.Message);
+                    return StatusCode(500, "Something went wrong.");
+                }
+
+                catch (DbUpdateException e)
+                {
+                    logger.LogError(e.Message);
                     return StatusCode(500, "Something went wrong.");
                 }
         }
@@ -83,9 +87,15 @@ namespace Repetisjon_REST_og_CRUD.Controllers
                 context.SaveChanges();
                 return Ok();
             }
-            catch (Exception e)
+            catch (ArgumentNullException e)
             {
+                logger.LogError(e.Message);
                 return StatusCode (500, "Something went wrong.");
+            }
+            catch (DbUpdateException e)
+            {
+                logger.LogError(e.Message);
+                return StatusCode(500, "Something went wrong.");
             }
         }
     }
